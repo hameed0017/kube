@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-angular
+spec:
+  selector:
+    matchLabels:
+      app: frontend-angular
+      tier: frontend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-angular
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+        - name: frontend-angular
+          image: ananthayyaswamy03/angular:v1
+          ports:
+            - containerPort: 80
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx","-s","quit"]

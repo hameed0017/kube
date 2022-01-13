@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-backend
+spec:
+  selector:
+    matchLabels:
+      app: golang-backend
+      tier: backend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: golang-backend
+        tier: backend
+        track: stable
+    spec:
+      initContainers:
+        - name: init-db
+          image: busybox:1.31
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z mysql 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL DB Server has started";'] 
+      containers:
+        - name: golang-backend
+          image: ananthayyaswamy03/application-back:v3
+          ports:
+            - name: http
+              containerPort: 30001
+          env:
+            - name: DB_HOSTNAME
+              value: "mysql"            
+            - name: DB_PORT
+              value: "3306"            
+            - name: DB_NAME
+              value: "webappdb"            
+            - name: DB_USERNAME
+              value: "admin"            
+            - name: DB_PASSWORD
+              value: "admin321"   
+...
